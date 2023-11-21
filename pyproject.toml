@@ -1,0 +1,47 @@
+[project]
+name = "watchfox"
+version = "0.0.1"
+authors = [
+  { name="Andrea Baisero", email="andrea.baisero@gmail.com" },
+]
+description = "Connect to Minifoxwq server-sent-events to trigger python and OBS actions"
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "blinker",
+  "click",
+  "edge-tts",
+  "httpx",
+  "httpx_sse",
+  "obsws-python",
+  "playsound",
+  "pygobject",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/abaisero/watchfox"
+"Bug Tracker" = "https://github.com/abaisero/watchfox/issues"
+
+[tool.setuptools]
+packages = ["watchfox"]
+
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+# line_length = 100
+
+# [tool.black]
+# skip_string_normalization = true
+# line_length = 100
+
+# [tool.ruff]
+# line-length = 100
+
+[tool.ruff.format]
+quote-style = 'single'

@@ -1,0 +1,20 @@
+version = 1
+disable_existing_loggers = false
+
+[root]
+level = 'INFO'
+handlers = ['console', 'logfile']
+
+[handlers.console]
+class = 'logging.StreamHandler'
+formatter = 'standard'
+
+[handlers.logfile]
+class = 'logging.FileHandler'
+filename = 'watchfox.log'
+mode = 'w'
+formatter = 'standard'
+
+[formatters.standard]
+class = 'logging.Formatter'
+format = '[%(levelname)s] %(name)s::%(funcName)s: %(message)s'

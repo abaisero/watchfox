@@ -1,0 +1,11 @@
+[minifoxwq]
+sse_url = 'http://localhost:9111'
+
+[connection] # obs config
+host = "localhost"
+port = 4455
+password = "insert-obs-websocket-server-password-here"
+
+[watchfox]
+username = 'username'
+any_field_really = 'useful-value'
