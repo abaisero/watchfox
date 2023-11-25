@@ -81,5 +81,6 @@ become available in the callbacks yourself.
 
 `example-move-tts.py` contains a demo that employs TTS to verbalize the moves
 obtained by the server-sent-event stream.  Before running it, you must first
-generate the audio files by running `make-audio.py` (this will take a few
+generate the audio files by running `make-audio-fox.py` or `make-audio-ogs.py`
+depending on which coordinate system you want to use (this will take a few
 minutes).
