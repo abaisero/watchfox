@@ -83,7 +83,7 @@ def cmd_record(config: dict, events_filename: str, append: bool):
     multiple=True,
     help='Do not process these events.',
 )
-@click.argument('--sleep', type=float, default=1.0, help='Seconds between events.')
+@click.option('--sleep', type=float, default=1.0, help='Seconds between events.')
 @click.option('--mock-obs', is_flag=True, help='Do not connect to OBS instance.')
 def cmd_replay(
     config: dict,
