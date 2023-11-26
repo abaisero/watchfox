@@ -37,7 +37,7 @@ def on_processing_end(processor: SSEProcessor):
 
 @SSEProcessor.match_start.connect
 def on_match_start(processor: SSEProcessor, data: MinifoxMatchStart):
-    print(f'Event: match_time for game with {data['id']=}')
+    print(f'Event: match_start for game with {data['id']=}')
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
@@ -61,7 +61,7 @@ def on_match_time(processor: SSEProcessor, data: MinifoxMatchTime):
 
 @SSEProcessor.match_move.connect
 def on_match_move(processor: SSEProcessor, data: MinifoxMatchMove):
-    print(f'Event: match_time for game with {data['id']=}')
+    print(f'Event: match_move for game with {data['id']=}')
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
@@ -73,7 +73,7 @@ def on_match_move(processor: SSEProcessor, data: MinifoxMatchMove):
 
 @SSEProcessor.match_chat.connect
 def on_match_chat(processor: SSEProcessor, data: MinifoxMatchChat):
-    print(f'Event: match_time for game with {data['id']=}')
+    print(f'Event: match_chat for game with {data['id']=}')
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
@@ -85,7 +85,7 @@ def on_match_chat(processor: SSEProcessor, data: MinifoxMatchChat):
 
 @SSEProcessor.match_end.connect
 def on_match_end(processor: SSEProcessor, data: MinifoxMatchEnd):
-    print(f'Event: match_time for game with {data['id']=}')
+    print(f'Event: match_end for game with {data['id']=}')
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
