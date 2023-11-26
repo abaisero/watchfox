@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from typing import cast
 from unittest.mock import Mock
@@ -14,17 +16,32 @@ class OBSClient(ReqClient):
 
 
 class OBSFilterManager:
-    def __init__(self, client: OBSClient):
+    def __init__(self, client: OBSClient, source: str, filter: str):
         super().__init__()
         self.client = client
+        self.source = source
+        self.filter = filter
 
-    def enable(self, source: str, filter: str):
-        logger.info(f'enabling {source=} {filter=}')
-        self.client.set_source_filter_enabled(source, filter, True)
+    @property
+    def enabled(self) -> bool:
+        data = self.client.get_source_filter(self.source, self.filter)
+        data = cast(dict, data)
+        return data['filterEnabled']
 
-    def disable(self, source: str, filter: str):
-        logger.info(f'enabling {source=} {filter=}')
-        self.client.set_source_filter_enabled(source, filter, False)
+    @enabled.setter
+    def enabled(self, enabled: bool):
+        logger.info(f'setting {self.source=} {self.filter=} {enabled=}')
+        self.client.set_source_filter_enabled(self.source, self.filter, enabled)
+
+    @property
+    def settings(self) -> dict:
+        data = self.client.get_source_filter(self.source, self.filter)
+        data = cast(dict, data)
+        return data['filterSettings']
+
+    @settings.setter
+    def settings(self, settings: dict):
+        self.client.set_source_filter_settings(self.source, self.filter, settings, True)
 
 
 class OBSHotkeyManager:
@@ -51,37 +68,121 @@ class OBSHotkeyManager:
 
 
 class OBSMediaManager:
-    def __init__(self, client: OBSClient):
+    def __init__(self, client: OBSClient, media: str):
         super().__init__()
         self.client = client
+        self.media = media
 
-    def play(self, name: str):
-        logger.info(f'playing media {name=}')
+    def play(self):
+        logger.info(f'playing {self.media=}')
         self.client.trigger_media_input_action(
-            name,
+            self.media,
             'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PLAY',
         )
 
-    def pause(self, name: str):
-        logger.info(f'pausing media {name=}')
+    def pause(self):
+        logger.info(f'pausing {self.media=}')
         self.client.trigger_media_input_action(
-            name,
+            self.media,
             'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_PAUSE',
         )
 
-    def stop(self, name: str):
-        logger.info(f'stopping media {name=}')
+    def stop(self):
+        logger.info(f'stopping {self.media=}')
         self.client.trigger_media_input_action(
-            name,
+            self.media,
             'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_STOP',
         )
 
-    def restart(self, name: str):
-        logger.info(f'restarting media {name=}')
+    def restart(self):
+        logger.info(f'restarting {self.media=}')
         self.client.trigger_media_input_action(
-            name,
+            self.media,
             'OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART',
         )
+
+
+class OBSSceneManager:
+    def __init__(self, client: OBSClient, scene: str):
+        super().__init__()
+        self.client = client
+        self.scene = scene
+
+    def item(self, source: str) -> OBSSceneItemManager:
+        return OBSSceneItemManager(self.client, self.scene, source)
+
+    def preview(self):
+        logger.info(f'setting {self.scene=} as preview')
+        self.client.set_current_preview_scene(self.scene)
+
+    def program(self):
+        logger.info(f'setting {self.scene=} as program')
+        self.client.set_current_program_scene(self.scene)
+
+
+class OBSSceneItemManager:
+    def __init__(self, client: OBSClient, scene: str, source: str):
+        super().__init__()
+        self.client = client
+        self.scene = scene
+        self.source = source
+        self.source_id = self._get_source_id()
+
+    def _get_source_id(self):
+        data = self.client.get_scene_item_id(self.scene, self.source)
+        data = cast(dict, data)
+        return data['sceneItemId']
+
+    @property
+    def enabled(self) -> bool:
+        data = self.client.get_scene_item_enabled(self.scene, self.source_id)
+        data = cast(dict, data)
+        return data['sceneItemEnabled']
+
+    @enabled.setter
+    def enabled(self, enabled: bool):
+        logger.info(f'setting {self.scene=} {self.source=} {enabled=}')
+        self.client.set_scene_item_enabled(self.scene, self.source_id, enabled)
+
+    @property
+    def locked(self) -> bool:
+        data = self.client.get_scene_item_locked(self.scene, self.source_id)
+        data = cast(dict, data)
+        return data['sceneItemLocked']
+
+    @locked.setter
+    def locked(self, locked: bool):
+        logger.info(f'setting {self.scene=} {self.source=} {locked=}')
+        self.client.set_scene_item_locked(self.scene, self.source_id, locked)
+
+
+class OBSSourceManager:
+    def __init__(self, client: OBSClient, source: str):
+        super().__init__()
+        self.client = client
+        self.source = source
+
+    def filter(self, filter: str) -> OBSFilterManager:
+        return OBSFilterManager(self.client, self.source, filter)
+
+
+class OBSLabelManager:
+    def __init__(self, client: OBSClient, label: str):
+        super().__init__()
+        self.client = client
+        self.label = label
+
+    @property
+    def text(self) -> str:
+        data = self.client.get_input_settings(self.label)
+        data = cast(dict, data)
+        return data['inputSettings']['text']
+
+    @text.setter
+    def text(self, text: str):
+        logger.info(f'setting {self.label=} {text=}')
+        settings = {'text': text}
+        self.client.set_input_settings(self.label, settings, True)
 
 
 class OBSManager:
@@ -91,17 +192,26 @@ class OBSManager:
         super().__init__()
         self.client = client
 
-    @property
-    def media(self) -> OBSMediaManager:
-        return OBSMediaManager(self.client)
+    def media(self, media: str) -> OBSMediaManager:
+        return OBSMediaManager(self.client, media)
 
-    @property
     def hotkey(self) -> OBSHotkeyManager:
         return OBSHotkeyManager(self.client)
 
-    @property
-    def filter(self) -> OBSFilterManager:
-        return OBSFilterManager(self.client)
+    def filter(self, source: str, filter: str) -> OBSFilterManager:
+        return OBSFilterManager(self.client, source, filter)
+
+    def label(self, label: str) -> OBSLabelManager:
+        return OBSLabelManager(self.client, label)
+
+    def scene(self, scene: str) -> OBSSceneManager:
+        return OBSSceneManager(self.client, scene)
+
+    def scene_item(self, scene: str, source: str) -> OBSSceneItemManager:
+        return OBSSceneItemManager(self.client, scene, source)
+
+    def source(self, source: str) -> OBSSourceManager:
+        return OBSSourceManager(self.client, source)
 
 
 def make_obs_manager(*, mock: bool = False) -> OBSManager:

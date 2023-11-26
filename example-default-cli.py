@@ -22,7 +22,7 @@ def on_match_start(processor: SSEProcessor, data: MinifoxMatchStart):
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
-    # e.g., processor.manager.media.restart('name-of-media')
+    # e.g., processor.manager.media('name-of-media').restart()
 
     # we can access config data
     assert processor.config['config-key'] == 'config-value'
@@ -35,7 +35,7 @@ def on_match_time(processor: SSEProcessor, data: MinifoxMatchTime):
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
-    # e.g., processor.manager.media.restart('name-of-media')
+    # e.g., processor.manager.media('name-of-media').restart()
 
     # we can access config data
     assert processor.config['config-key'] == 'config-value'
@@ -48,7 +48,7 @@ def on_match_move(processor: SSEProcessor, data: MinifoxMatchMove):
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
-    # e.g., processor.manager.media.restart('name-of-media')
+    # e.g., processor.manager.media('name-of-media').restart()
 
     # we can access config data
     assert processor.config['config-key'] == 'config-value'
@@ -61,7 +61,7 @@ def on_match_chat(processor: SSEProcessor, data: MinifoxMatchChat):
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
-    # e.g., processor.manager.media.restart('name-of-media')
+    # e.g., processor.manager.media('name-of-media').restart()
 
     # we can access config data
     assert processor.config['config-key'] == 'config-value'
@@ -74,7 +74,7 @@ def on_match_end(processor: SSEProcessor, data: MinifoxMatchEnd):
 
     # we can access the obs manager
     assert isinstance(processor.manager, OBSManager)
-    # e.g., processor.manager.media.restart('name-of-media')
+    # e.g., processor.manager.media('name-of-media').restart()
 
     # we can access config data
     assert processor.config['config-key'] == 'config-value'
