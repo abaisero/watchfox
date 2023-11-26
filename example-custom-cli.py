@@ -11,6 +11,30 @@ from watchfox.types import (
 )
 
 
+@SSEProcessor.processing_start.connect
+def on_processing_start(processor: SSEProcessor):
+    print('Processing is starting')
+
+    # we can access the obs manager
+    assert isinstance(processor.manager, OBSManager)
+    # e.g., processor.manager.media('name-of-media').restart()
+
+    # we can access config data
+    assert processor.config['config-key'] == 'config-value'
+
+
+@SSEProcessor.processing_end.connect
+def on_processing_end(processor: SSEProcessor):
+    print('Processing is ending')
+
+    # we can access the obs manager
+    assert isinstance(processor.manager, OBSManager)
+    # e.g., processor.manager.media('name-of-media').restart()
+
+    # we can access config data
+    assert processor.config['config-key'] == 'config-value'
+
+
 @SSEProcessor.match_start.connect
 def on_match_start(processor: SSEProcessor, data: MinifoxMatchStart):
     print(f'Event: match_time for game with {data['id']=}')

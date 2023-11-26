@@ -19,6 +19,8 @@ event_names = [
 
 
 class SSEProcessor:
+    processing_start = Signal()
+    processing_end = Signal()
     match_start = Signal()
     match_time = Signal()
     match_move = Signal()
@@ -26,6 +28,8 @@ class SSEProcessor:
     match_end = Signal()
 
     signals = {
+        'processing_start': processing_start,
+        'processing_end': processing_end,
         'match_start': match_start,
         'match_time': match_time,
         'match_move': match_move,
@@ -39,9 +43,13 @@ class SSEProcessor:
         self.config = {} if config is None else config
 
     def process_events(self, events: Iterator[ServerSentEvent]):
+        self.processing_start.send(self)
+
         for event in events:
             logger.info(f'processing SSE {event.event}')
             self.process_event(event)
+
+        self.processing_end.send(self)
 
     def process_event(self, event: ServerSentEvent):
         name = event.event
