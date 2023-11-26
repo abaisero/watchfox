@@ -1,7 +1,7 @@
 import logging
 import re
 import time
-from typing import Iterator, cast, Final
+from typing import Final, Iterator, cast
 
 from watchfox.types import Color, MinifoxMatchStart, Result
 
@@ -34,9 +34,13 @@ def parse_result(result: str) -> Result:
 
 def get_nick_color(data: MinifoxMatchStart, nick: str) -> Color:
     logger.info(f'searching color for {nick=}')
-    for color in ['white', 'black']:
-        if data[color]['nick'] == nick:
-            logger.info(f'color for {nick=} found {color=}')
-            return cast(Color, color)
+
+    if data.black.nick == nick:
+        logger.info(f'color for {nick=} found black')
+        return 'black'
+
+    if data.white.nick == nick:
+        logger.info(f'color for {nick=} found white')
+        return 'white'
 
     raise ValueError(f'{nick=} not found')

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
-from typing import Literal, TypedDict
+from typing import Literal
+
+from pydantic import BaseModel
 
 type Color = Literal['white', 'black']
 type Winner = Literal['white', 'black', 'draw']
@@ -13,27 +15,27 @@ class Result:
     points: float | None = None
 
 
-class MinifoxPlayer(TypedDict):
+class MinifoxPlayer(BaseModel):
     avatar: str
     country: str
     nick: str
     rank: str
 
 
-class MinifoxSettings(TypedDict):
+class MinifoxSettings(BaseModel):
     board_size: int
     chinese_rules: bool
     handicap: int
     komi: int
 
 
-class MinifoxTimeControl(TypedDict):
+class MinifoxTimeControl(BaseModel):
     byoyomi_periods: int
     byoyomi_time: int
     main_time: int
 
 
-class MinifoxMatchStart(TypedDict):
+class MinifoxMatchStart(BaseModel):
     id: str
     black: MinifoxPlayer
     white: MinifoxPlayer
@@ -41,14 +43,14 @@ class MinifoxMatchStart(TypedDict):
     time_control: MinifoxTimeControl
 
 
-class MinifoxMatchMove(TypedDict):
+class MinifoxMatchMove(BaseModel):
     id: str
     move: tuple[int, int]
     move_number: int
     turn: Literal['B', 'W']
 
 
-class MinifoxTime(TypedDict):
+class MinifoxTime(BaseModel):
     byoyomi: int
     byoyomi_time: int
     connected: bool
@@ -56,13 +58,13 @@ class MinifoxTime(TypedDict):
     main_time: int
 
 
-class MinifoxMatchTime(TypedDict):
+class MinifoxMatchTime(BaseModel):
     id: str
     black_time: MinifoxTime
     white_time: MinifoxTime
 
 
-class MinifoxMatchChat(TypedDict):
+class MinifoxMatchChat(BaseModel):
     id: str
     country: str
     nick: str
@@ -70,6 +72,6 @@ class MinifoxMatchChat(TypedDict):
     message: str
 
 
-class MinifoxMatchEnd(TypedDict):
+class MinifoxMatchEnd(BaseModel):
     id: str
     result: str

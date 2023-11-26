@@ -5,6 +5,13 @@ from blinker import Signal
 from httpx_sse import ServerSentEvent
 
 from watchfox.obs import OBSManager
+from watchfox.types import (
+    MinifoxMatchChat,
+    MinifoxMatchEnd,
+    MinifoxMatchMove,
+    MinifoxMatchStart,
+    MinifoxMatchTime,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +44,14 @@ class SSEProcessor:
         'match_end': match_end,
     }
 
+    data_models = {
+        'match_start': MinifoxMatchStart,
+        'match_time': MinifoxMatchTime,
+        'match_move': MinifoxMatchMove,
+        'match_chat': MinifoxMatchChat,
+        'match_end': MinifoxMatchEnd,
+    }
+
     def __init__(self, manager: OBSManager, config: dict[str, Any] | None = None):
         super().__init__()
         self.manager = manager
@@ -53,15 +68,9 @@ class SSEProcessor:
 
     def process_event(self, event: ServerSentEvent):
         name = event.event
-        data = event.json()
 
-        if name == 'match_move':
-            # convert json list into tuple
-            data['move'] = tuple(data['move'])
+        data_model = self.data_models[name]
+        data = data_model(**event.json())
 
-        try:
-            signal = self.signals[name]
-        except KeyError:
-            logger.error(f'invalid event {name=}')
-        else:
-            signal.send(self, data=data)
+        signal = self.signals[name]
+        signal.send(self, data=data)

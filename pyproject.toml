@@ -21,6 +21,7 @@ dependencies = [
   "httpx_sse",
   "obsws-python",
   "playsound",
+  "pydantic",
   "pygobject",
 ]
 
