@@ -46,3 +46,9 @@ combine_as_imports = true
 
 [tool.ruff.format]
 quote-style = 'single'
+
+[tool.bumpversion]
+current_version = '0.0.1'
+commit = true
+tag = true
+allow_dirty = true
