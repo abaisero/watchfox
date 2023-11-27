@@ -4,6 +4,9 @@ from threading import Thread
 
 import playsound
 
+from watchfox.types import Color, CoordinateSystem
+from watchfox.utils import make_move_audio_filename
+
 logger = logging.getLogger(__name__)
 
 
@@ -43,3 +46,8 @@ def join_audio():
 
     queue.put_nowait(None)
     thread.join()
+
+
+def play_move_audio(system: CoordinateSystem, color: Color, move: tuple[int, int]):
+    filename = make_move_audio_filename(system, color, move)
+    play_audio(filename)

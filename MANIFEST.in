@@ -1,0 +1,3 @@
+include watchfox/assets/audio/fox/*.mp3
+include watchfox/assets/audio/kgs/*.mp3
+include watchfox/assets/audio/ogs/*.mp3

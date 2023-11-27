@@ -3,6 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+type CoordinateSystem = Literal['fox', 'ogs', 'kgs']
 type Color = Literal['white', 'black']
 type Winner = Literal['white', 'black', 'draw']
 type Reason = Literal['resign', 'points']

@@ -1,9 +1,11 @@
 import logging
+import os
 import re
 import time
-from typing import Final, Iterator, cast
+from typing import Final, Iterator
 
-from watchfox.types import Color, MinifoxMatchStart, Result
+from watchfox import PACKAGE_DIR
+from watchfox.types import Color, CoordinateSystem, MinifoxMatchStart, Result
 
 logger = logging.getLogger(__name__)
 
@@ -44,3 +46,16 @@ def get_nick_color(data: MinifoxMatchStart, nick: str) -> Color:
         return 'white'
 
     raise ValueError(f'{nick=} not found')
+
+
+def make_assets_filename(filename: str) -> str:
+    return os.path.join(PACKAGE_DIR, 'assets', filename)
+
+
+def make_move_audio_filename(
+    system: CoordinateSystem,
+    color: Color,
+    move: tuple[int, int],
+):
+    i, j = move
+    return make_assets_filename(f'audio/{system}/{color}.{i}.{j}.mp3')
