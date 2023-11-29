@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import asyncio
 import logging
 import logging.config
 import tomllib
@@ -7,8 +8,8 @@ import click
 
 from watchfox.minifox import SSEProcessor, event_names
 from watchfox.obs import make_obs_manager
-from watchfox.sse import get_recorded_events, record_events, server_sent_events
-from watchfox.utils import sleep_iterator
+from watchfox.sse import aget_events, event_recorder, get_events, get_recorded_events
+from watchfox.utils import async_sleep_iterator
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +61,11 @@ def cmd_record(config: dict, events_filename: str, append: bool):
     print(f'command record {events_filename=}')
 
     url = config['minifoxwq']['sse_url']
-    events = server_sent_events(url)
-    record_events(events_filename, append, events)
+    events = get_events(url)
+
+    with event_recorder(events_filename, append) as record:
+        for event in events:
+            record(event)
 
 
 @cli.command('replay')
@@ -100,11 +104,14 @@ def cmd_replay(
     if whitelist:
         events = (event for event in events if event.event in whitelist)
     events = (event for event in events if event.event not in blacklist)
-    events = sleep_iterator(events, sleep)
+    events = async_sleep_iterator(events, sleep)
 
-    manager = make_obs_manager(mock=mock_obs)
-    processor = SSEProcessor(manager, config.get('watchfox'))
-    processor.process_events(events)
+    async def main():
+        manager = make_obs_manager(mock=mock_obs)
+        processor = SSEProcessor(manager, config.get('watchfox'))
+        await processor.process(events)
+
+    asyncio.run(main())
 
 
 @cli.command('run')
@@ -115,8 +122,12 @@ def cmd_run(config: dict, mock_obs: bool):
     print('command run')
 
     url = config['minifoxwq']['sse_url']
-    events = server_sent_events(url)
 
-    manager = make_obs_manager(mock=mock_obs)
-    processor = SSEProcessor(manager, config.get('watchfox'))
-    processor.process_events(events)
+    async def main():
+        events = aget_events(url)
+
+        manager = make_obs_manager(mock=mock_obs)
+        processor = SSEProcessor(manager, config.get('watchfox'))
+        await processor.process(events)
+
+    asyncio.run(main())

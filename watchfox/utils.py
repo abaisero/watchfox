@@ -1,8 +1,9 @@
+import asyncio
 import logging
 import os
 import re
 import time
-from typing import Final, Iterator
+from typing import AsyncIterator, Final, Iterator
 
 from watchfox import PACKAGE_DIR
 from watchfox.types import Color, CoordinateSystem, MinifoxMatchStart, Result
@@ -13,6 +14,12 @@ logger = logging.getLogger(__name__)
 def sleep_iterator[T](it: Iterator[T], sleep: float) -> Iterator[T]:
     for item in it:
         time.sleep(sleep)
+        yield item
+
+
+async def async_sleep_iterator[T](it: Iterator[T], sleep: float) -> AsyncIterator[T]:
+    for item in it:
+        await asyncio.sleep(sleep)
         yield item
 
 

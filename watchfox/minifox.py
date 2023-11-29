@@ -1,5 +1,6 @@
+import asyncio
 import logging
-from typing import Any, Iterator
+from typing import Any, AsyncIterator
 
 from blinker import Signal
 from httpx_sse import ServerSentEvent
@@ -57,20 +58,24 @@ class SSEProcessor:
         self.manager = manager
         self.config = {} if config is None else config
 
-    def process_events(self, events: Iterator[ServerSentEvent]):
-        self.processing_start.send(self)
+    async def process(self, events: AsyncIterator[ServerSentEvent]):
+        tasks = []
 
-        for event in events:
+        coro = self.processing_start.send_async(self)
+        tasks.append(asyncio.create_task(coro))
+
+        async for event in events:
             logger.info(f'processing SSE {event.event}')
-            self.process_event(event)
+            name = event.event
 
-        self.processing_end.send(self)
+            data_model = self.data_models[name]
+            data = data_model(**event.json())
 
-    def process_event(self, event: ServerSentEvent):
-        name = event.event
+            signal = self.signals[name]
+            coro = signal.send_async(self, data=data)
+            tasks.append(asyncio.create_task(coro))
 
-        data_model = self.data_models[name]
-        data = data_model(**event.json())
+        coro = self.processing_end.send_async(self)
+        tasks.append(asyncio.create_task(coro))
 
-        signal = self.signals[name]
-        signal.send(self, data=data)
+        await asyncio.wait(tasks)
