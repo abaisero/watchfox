@@ -23,11 +23,15 @@ dependencies = [
   "playsound",
   "pydantic",
   "pygobject",
+  "pyside6",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/abaisero/watchfox"
 "Bug Tracker" = "https://github.com/abaisero/watchfox/issues"
+
+[project.scripts]
+watchfox-mediamanager = "watchfox.scripts.mediamanager:main"
 
 [tool.setuptools]
 packages = ["watchfox"]
